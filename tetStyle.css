@@ -1,0 +1,9 @@
+#main_canvas {
+    border: 1px solid black;
+}
+
+.canvas{
+    margin: 40px 30%;
+    float: left;
+}
+
