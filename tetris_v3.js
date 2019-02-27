@@ -1,13 +1,4 @@
-const testing = (function(){
-
-    const u1 = 25;
-    const [u2, u3, u4, u5, u6, u7, u8] = [u1*2, u1*3, u1*4, u1*5, u1*6, u1*7, u1*8];
-    const [space, left, up, right, down] = [32, 37, 38, 39, 40];
-    const landed = [];
-    const canvas = document.getElementById("main_canvas");
-    canvas.width = u1 * 10;
-    canvas.height = u1 * 20;
-    const ctx = canvas.getContext("2d");
+const testing = (() => {
 
     return {
         fillLanded: (arr, c) => {
@@ -50,7 +41,7 @@ const testing = (function(){
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 1, 0, 0, 1, 1, 1, 1, 1],
+            [1, 1, 0, 0, 0, 0, 1, 1, 1, 1],
             [1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
             [1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
         ],
@@ -64,34 +55,69 @@ const testing = (function(){
             let randomNum = Math.floor(Math.random() * Math.floor(keys.length));
             return obj[keys[randomNum]];
         },
-        setCanvas: (c) => {
+        setCanvas: (c, canv, unit) => {
             c.fillStyle = "black";
-            c.fillRect(0, 0, canvas.width, canvas.height);
-            for (let i = u1; i < canvas.height; i += u1) {
+            c.fillRect(0, 0, canv.width, canv.height);
+            for (let i = unit; i < canv.height; i += unit) {
                 c.beginPath();
                 c.moveTo(i, 0);
-                c.lineTo(i, canvas.height);
+                c.lineTo(i, canv.height);
                 c.strokeStyle = "white";
                 c.lineWidth = 0.5;
                 c.stroke();
             }
-            for (let i = u1; i < canvas.height; i += u1) {
+            for (let i = unit; i < canv.height; i += unit) {
                 c.beginPath();
                 c.moveTo(0, i);
-                c.lineTo(canvas.width, i);
+                c.lineTo(canv.width, i);
                 c.strokeStyle = "white";
                 c.lineWidth = 0.5;
                 c.stroke();
             }
             c.beginPath();
-            c.moveTo(0, canvas.height);
-            c.lineTo(canvas.width, canvas.height);
+            c.moveTo(0, canv.height);
+            c.lineTo(canv.width, canv.height);
             c.strokeStyle = "yellow";
             c.lineWidth = 5;
             c.stroke();
         },
-        collision: () => {
-
+        collisionDown: (main, tet) => {
+            for (let i = 0; i < tet.grid.length; i++) {
+                for (let j = 0; j < tet.grid[i].length; j++) {
+                    if(tet.grid[i][j] !== 0 && main[i + tet.posY + 1][j + tet.posX] !== 0) {
+                        return 0;
+                    }
+                }
+            }
+        },
+        collisionLeft: (main, tet) => {
+            for (let i = 0; i < tet.grid.length; i++) {
+                for (let j = 0; j < tet.grid[i].length; j++) {
+                    if(tet.grid[i][j] !== 0 && main[i + tet.posY][j + tet.posX - 1] !== 0) {
+                        return 0;
+                    }
+                }
+            }
+        },
+        collisionRight: (main, tet) => {
+            for (let i = 0; i < tet.grid.length; i++) {
+                for (let j = 0; j < tet.grid[i].length; j++) {
+                    if(tet.grid[i][j] !== 0 && main[i + tet.posY][j + tet.posX + 1] !== 0) {
+                        return 0;
+                    }
+                }
+            }
+        },
+        // ! needs fixing
+        collisionRotate: (main, tet) => {
+            tet.rotate();
+            for (let i = 0; i < tet.grid.length; i++) {
+                for (let j = 0; j < tet.grid[i].length; j++) {
+                    if(tet.grid[i][j] !== 0 && main[i + tet.posY][j + tet.posX] !== 0) {
+                        return 0;
+                    }
+                }
+            }
         }
     }
 
@@ -100,12 +126,10 @@ const testing = (function(){
 
 
 
-const collisionController = (() => {
+const MainController = (() => {
 
     const u1 = 25;
-    const [u2, u3, u4, u5, u6, u7, u8] = [u1*2, u1*3, u1*4, u1*5, u1*6, u1*7, u1*8];
     const [space, left, up, right, down] = [32, 37, 38, 39, 40];
-    const landed = [];
     const canvas = document.getElementById("main_canvas");
     canvas.width = u1 * 10;
     canvas.height = u1 * 20;
@@ -167,69 +191,86 @@ const collisionController = (() => {
         O: new TetGrid(4, 0, 2, [[4, 4], [4, 4]]),
         S: new TetGrid(4, 0, 3, [[0, 5, 5], [5, 5, 0], [0, 0, 0]]),
         T: new TetGrid(4, 0, 3, [[0, 0, 0], [6, 6, 6], [0, 6, 0]]),
-        Z: new TetGrid(4, 0, 3, [[7, 7, 0], [0, 7, 7], [0, 0, 0]]),
-        bla: new TetGrid(3, 0, 1, [[1]])
+        Z: new TetGrid(4, 0, 3, [[7, 7, 0], [0, 7, 7], [0, 0, 0]])
     }
 
-    testing.setCanvas(ctx);
 
-    tetro["O"].draw();
+
+    // tetro["I"].draw();
 
     // console.log(testing.landed);
-    testing.fillLanded(testing.landed, ctx);
 
     const setupEventListeners = function(el) {
         document.addEventListener('keydown', function(event) {
             if (event.keyCode === up || event.which === up) {
-                tetro["O"].rotate();
-                testing.setCanvas(ctx);
-                tetro["O"].draw();
-                testing.fillLanded(testing.landed, ctx);
-            } else if (event.keyCode === left || event.which === left) {
-                if ( testing.landed[tetro["O"].posY][tetro["O"].posX-1] === 0) {
-                    tetro["O"].left();
-                    testing.setCanvas(ctx);
-                    tetro["O"].draw();
+                if (testing.collisionRotate(testing.landed, el) !== 0) {
+                    // el.rotate();
+                    testing.setCanvas(ctx, canvas, u1);
+                    el.draw();
                     testing.fillLanded(testing.landed, ctx);
-                    console.log(testing.landed[tetro["O"].posY][tetro["O"].posX]);
+                }
+            } else if (event.keyCode === left || event.which === left) {
+                if (testing.collisionLeft(testing.landed, el) !== 0) {
+                    el.left();
+                    testing.setCanvas(ctx, canvas, u1);
+                    el.draw();
+                    testing.fillLanded(testing.landed, ctx);
                 }
             } else if (event.keyCode === right || event.which === right) {
-                if ( testing.landed[tetro["O"].posY][tetro["O"].posX+1] === 0) {
-                    tetro["O"].right();
-                    testing.setCanvas(ctx);
-                    tetro["O"].draw();
+                if (testing.collisionRight(testing.landed, el) !== 0) {
+                    el.right();
+                    testing.setCanvas(ctx, canvas, u1);
+                    el.draw();
                     testing.fillLanded(testing.landed, ctx);
-                    console.log(testing.landed[tetro["O"].posY][tetro["O"].posX]);
                 }
             } else if (event.keyCode === down || event.which === down) {
-                if (testing.landed[tetro["O"].posY+1][tetro["O"].posX] === 0) {
-                    tetro["O"].down();
-                    testing.setCanvas(ctx);
-                    tetro["O"].draw();
+                if (testing.collisionDown(testing.landed, el) !== 0) {
+                    el.down();
+                    testing.setCanvas(ctx, canvas, u1);
+                    el.draw();
                     testing.fillLanded(testing.landed, ctx);
-                    console.log(testing.landed[tetro["O"].posY][tetro["O"].posX]);
                 }
+
             } else if (event.keyCode === space || event.which === space) {
 
             }
         }, false);
     }
 
-    // remove default eventListeners
+    //? remove default eventListeners
     window.addEventListener("keydown", function(e) {
         if([space, left, up, right, down].indexOf(e.keyCode) > -1) {
             e.preventDefault();
         }
     });
-    setupEventListeners();
 
-    // const collision = (main, tet) => {
-    //     for (let i = 0; i < main.length; i++) {
-    //         for (let j = 0; j < main[i].length; j++) {
-    //             if (main[i][j])
-    //         }
-    //     }
-    // }
+    const init = () => {
+        // 1 select random tetro
+        let randTet = testing.getRandom(tetro);
+        console.log(randTet)
+        // 2. set event listeners
+        setupEventListeners(randTet);
+        // 3. set canvas
+        testing.setCanvas(ctx, canvas, u1);
+        // Temp. fill landed array
+        testing.fillLanded(testing.landed, ctx);
+        // 4. draw tetro on canvas
+        randTet.draw();
+        // 5. start tetro movement
+        //! needs fixing
+        let move = setInterval(() => {
+            if (testing.collisionDown(testing.landed, randTet) !== 0) {
+                randTet.down();
+                testing.setCanvas(ctx, canvas, u1);
+                randTet.draw();
+                testing.fillLanded(testing.landed, ctx);
+            } else {
+                cancelAnimationFrame(move);
+            }
+        }, 500)
+    }
+
+    init();
 
 })();
 
