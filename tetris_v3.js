@@ -1,12 +1,12 @@
 const testing = (() => {
 
     return {
-        fillLanded: (arr, c) => {
+        fillLanded: (arr, c, unit) => {
             for (let i = 0; i < arr.length; i++) {
                 for (let j = 0; j < arr[i].length; j++) {
                     if (arr[i][j] !== 0) {
                         c.fillStyle = 'rgba(255, 0, 0, 0.5)';
-                        c.fillRect(j * 25, i * 25, 25, 25);
+                        c.fillRect(j * unit, i * unit, unit, unit);
                     }
                 }
             }
@@ -38,12 +38,12 @@ const testing = (() => {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
             [1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 0, 0, 0, 0, 1, 1, 1, 1],
+            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
+            [1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
+            [1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
             [1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
+            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
         ],
         getRandom: (obj) => {
             let keys = [];
@@ -118,6 +118,14 @@ const testing = (() => {
                     }
                 }
             }
+        },
+        createGrid: (x, y, grid) => {
+            for (let i = 0; i < y; i++) {
+                grid.push([0]);
+                for (let j = 0; j < x; j++) {
+                    grid[i].push(0);
+                }
+            }
         }
     }
 
@@ -135,16 +143,6 @@ const MainController = (() => {
     canvas.height = u1 * 20;
     const ctx = canvas.getContext("2d");
 
-    function createGrid(x, y, grid) {
-        for (let i = 0; i < y; i++) {
-            grid.push([0]);
-            for (let j = 0; j < x; j++) {
-                grid[i].push(0);
-            }
-        }
-    }
-
-    //createGrid(9, 20, landed);
 
     class TetGrid {
         constructor(posX, posY, length, grid) {
@@ -152,6 +150,9 @@ const MainController = (() => {
             this.posY = posY;
             this.grid = grid;
             this.length = length;
+            this.startX = posX;
+            this.startY = posY;
+            this.startGrid = grid;
         }
         left() {
             this.posX--;
@@ -174,7 +175,7 @@ const MainController = (() => {
         }
         draw() {
             testing.setCanvas(ctx, canvas, u1);
-            testing.fillLanded(testing.landed, ctx);
+            testing.fillLanded(testing.landed, ctx, u1);
             for (let i = 0; i < this.grid.length; i++) {
                 for (let j = 0; j < this.grid[i].length; j++) {
                     if (this.grid[i][j] !== 0) {
@@ -183,6 +184,11 @@ const MainController = (() => {
                     }
                 }
             }
+        }
+        reset() {
+            this.posX = this.startX;
+            this.posY = this.startY;
+            this.grid = this.startGrid;
         }
     }
 
@@ -234,13 +240,23 @@ const MainController = (() => {
             e.preventDefault();
         }
     });
+    let randTet = tetro["L"];
+    setupEventListeners(randTet);
 
     const init = () => {
+
         // 1 select random tetro
-        let randTet = testing.getRandom(tetro);
+        // let randTet = testing.getRandom(tetro);
+        // let assObj = Object.assign({}, randTet);
+        // let newObj = Object.freeze(assObj)
+
+        // let newObj = testing.cloneObject(randTet);
+        randTet.posX = 20;
+        console.log(randTet);
+        randTet.reset();
         console.log(randTet)
         // 2. set event listeners
-        setupEventListeners(randTet);
+
 
         // 4. draw tetro on canvas
         randTet.draw();
@@ -252,9 +268,11 @@ const MainController = (() => {
         //         randTet.down();
         //         testing.setCanvas(ctx, canvas, u1);
         //         randTet.draw();
+        //         // console.log(newObj.posY)
         //         // testing.fillLanded(testing.landed, ctx);
         //     } else {
         //         clearInterval(move);
+        //         randTet.posY = 0;
         //         init();
         //     }
         // }, 500)
