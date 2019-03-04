@@ -173,6 +173,8 @@ const MainController = (() => {
             return this.grid = tempGrid;
         }
         draw() {
+            testing.setCanvas(ctx, canvas, u1);
+            testing.fillLanded(testing.landed, ctx);
             for (let i = 0; i < this.grid.length; i++) {
                 for (let j = 0; j < this.grid[i].length; j++) {
                     if (this.grid[i][j] !== 0) {
@@ -205,35 +207,24 @@ const MainController = (() => {
             if (event.keyCode === up || event.which === up) {
                 if (testing.collisionRotate(testing.landed, el) !== 0) {
                     // el.rotate();
-                    testing.setCanvas(ctx, canvas, u1);
-                    el.draw();
-                    testing.fillLanded(testing.landed, ctx);
                 }
             } else if (event.keyCode === left || event.which === left) {
                 if (testing.collisionLeft(testing.landed, el) !== 0) {
                     el.left();
-                    testing.setCanvas(ctx, canvas, u1);
-                    el.draw();
-                    testing.fillLanded(testing.landed, ctx);
                 }
             } else if (event.keyCode === right || event.which === right) {
                 if (testing.collisionRight(testing.landed, el) !== 0) {
                     el.right();
-                    testing.setCanvas(ctx, canvas, u1);
-                    el.draw();
-                    testing.fillLanded(testing.landed, ctx);
                 }
             } else if (event.keyCode === down || event.which === down) {
                 if (testing.collisionDown(testing.landed, el) !== 0) {
                     el.down();
-                    testing.setCanvas(ctx, canvas, u1);
-                    el.draw();
-                    testing.fillLanded(testing.landed, ctx);
                 }
-
             } else if (event.keyCode === space || event.which === space) {
 
             }
+            el.draw();
+            // testing.fillLanded(testing.landed, ctx);
         }, false);
     }
 
@@ -250,24 +241,23 @@ const MainController = (() => {
         console.log(randTet)
         // 2. set event listeners
         setupEventListeners(randTet);
-        // 3. set canvas
-        testing.setCanvas(ctx, canvas, u1);
-        // Temp. fill landed array
-        testing.fillLanded(testing.landed, ctx);
+
         // 4. draw tetro on canvas
         randTet.draw();
+
         // 5. start tetro movement
         //! needs fixing
-        let move = setInterval(() => {
-            if (testing.collisionDown(testing.landed, randTet) !== 0) {
-                randTet.down();
-                testing.setCanvas(ctx, canvas, u1);
-                randTet.draw();
-                testing.fillLanded(testing.landed, ctx);
-            } else {
-                cancelAnimationFrame(move);
-            }
-        }, 500)
+        // let move = setInterval(() => {
+        //     if (testing.collisionDown(testing.landed, randTet) !== 0) {
+        //         randTet.down();
+        //         testing.setCanvas(ctx, canvas, u1);
+        //         randTet.draw();
+        //         // testing.fillLanded(testing.landed, ctx);
+        //     } else {
+        //         clearInterval(move);
+        //         init();
+        //     }
+        // }, 500)
     }
 
     init();
