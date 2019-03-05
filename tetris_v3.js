@@ -11,14 +11,13 @@ const testing = (() => {
                 }
             }
         },
-        insert: () => {
-            for (let i = 0; i < mainGrid.length; i++) {                         // i => column(y) coordinates
-                if (i >= this.posY && i < this.posY + this.length) {
-                    console.log(i)
-                    for (let j = 0; j < mainGrid[i].length; j++) {              // j => row(x) coordinates
-                        if (j >= this.posX && j < (this.posX + this.length)) {
-                            mainGrid[i][j] = this.grid[i][j - this.posX];
-                        }
+        insert: (grid, tet) => {
+            for (let i = 0; i < tet.grid.length; i++) {
+                for (let j = 0; j < tet.grid[i].length; j++) {
+                    if (tet.grid[i][j] === 0){
+                        continue;
+                    } else if (grid[i + tet.posY][j + tet.posX] === 0) {
+                        grid[i + tet.posY][j + tet.posX] = tet.grid[i][j];
                     }
                 }
             }
@@ -38,12 +37,12 @@ const testing = (() => {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-            [0, 1, 0, 0, 0, 0, 0, 0, 0, 1],
-            [1, 1, 0, 0, 0, 0, 0, 1, 1, 1],
-            [1, 1, 1, 1, 0, 0, 1, 1, 1, 1],
-            [1, 1, 1, 1, 0, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
         ],
         getRandom: (obj) => {
             let keys = [];
@@ -84,7 +83,9 @@ const testing = (() => {
         collisionDown: (main, tet) => {
             for (let i = 0; i < tet.grid.length; i++) {
                 for (let j = 0; j < tet.grid[i].length; j++) {
-                    if(tet.grid[i][j] !== 0 && main[i + tet.posY + 1][j + tet.posX] !== 0) {
+                    if (tet.grid[i][j] !== 0 && main[i + tet.posY + 1] === undefined) {
+                        return 0;
+                    } else if (tet.grid[i][j] !== 0 && main[i + tet.posY + 1][j + tet.posX] !== 0) {
                         return 0;
                     }
                 }
@@ -126,6 +127,14 @@ const testing = (() => {
                     grid[i].push(0);
                 }
             }
+        },
+        removeLine: (grid) => {
+            for (let i = 0; i < grid.length; i++) {
+                if (grid[i].includes(0) === false) {
+                    grid.splice(i, 1);
+                    grid.unshift([0,0,0,0,0,0,0,0,0, 0])
+                }
+            }
         }
     }
 
@@ -153,6 +162,7 @@ const MainController = (() => {
             this.startX = posX;
             this.startY = posY;
             this.startGrid = grid;
+            this.counter = 0;
         }
         left() {
             this.posX--;
@@ -203,11 +213,7 @@ const MainController = (() => {
     }
 
 
-
-    // tetro["I"].draw();
-
-    // console.log(testing.landed);
-
+    //! needs fixing to be without anonymous function
     const setupEventListeners = function(el) {
         document.addEventListener('keydown', function(event) {
             if (event.keyCode === up || event.which === up) {
@@ -230,8 +236,7 @@ const MainController = (() => {
 
             }
             el.draw();
-            // testing.fillLanded(testing.landed, ctx);
-        }, false);
+        });
     }
 
     //? remove default eventListeners
@@ -240,42 +245,40 @@ const MainController = (() => {
             e.preventDefault();
         }
     });
-    let randTet = tetro["L"];
-    setupEventListeners(randTet);
+
 
     const init = () => {
 
-        // 1 select random tetro
-        // let randTet = testing.getRandom(tetro);
-        // let assObj = Object.assign({}, randTet);
-        // let newObj = Object.freeze(assObj)
 
-        // let newObj = testing.cloneObject(randTet);
-        randTet.posX = 20;
-        console.log(randTet);
-        randTet.reset();
-        console.log(randTet)
-        // 2. set event listeners
+        let randTet = testing.getRandom(tetro);
+
+        if (randTet.counter === 0) {
+            setupEventListeners(randTet);
+        }
 
 
-        // 4. draw tetro on canvas
+
+
+
         randTet.draw();
 
-        // 5. start tetro movement
-        //! needs fixing
-        // let move = setInterval(() => {
-        //     if (testing.collisionDown(testing.landed, randTet) !== 0) {
-        //         randTet.down();
-        //         testing.setCanvas(ctx, canvas, u1);
-        //         randTet.draw();
-        //         // console.log(newObj.posY)
-        //         // testing.fillLanded(testing.landed, ctx);
-        //     } else {
-        //         clearInterval(move);
-        //         randTet.posY = 0;
-        //         init();
-        //     }
-        // }, 500)
+
+        //? fixed, i think (needs testing)
+        let move = setInterval(() => {
+            if (testing.collisionDown(testing.landed, randTet) !== 0) {
+                randTet.down();
+                testing.setCanvas(ctx, canvas, u1);
+                randTet.draw();
+            } else {
+                clearInterval(move);
+                testing.insert(testing.landed, randTet);
+                testing.removeLine(testing.landed)
+                randTet.counter++;
+                console.log(randTet.counter)
+                randTet.reset();
+                init();
+            }
+        }, 500)
     }
 
     init();
