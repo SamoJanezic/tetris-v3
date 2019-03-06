@@ -1,4 +1,4 @@
-const testing = (() => {
+const logicController = (() => {
 
     return {
         fillLanded: (arr, c, unit) => {
@@ -143,7 +143,7 @@ const testing = (() => {
 
 
 
-const MainController = (() => {
+const MainController = ((logCtrl) => {
 
     const u1 = 25;
     const [space, left, up, right, down] = [32, 37, 38, 39, 40];
@@ -184,8 +184,8 @@ const MainController = (() => {
             return this.grid = tempGrid;
         }
         draw() {
-            testing.setCanvas(ctx, canvas, u1);
-            testing.fillLanded(testing.landed, ctx, u1);
+            logCtrl.setCanvas(ctx, canvas, u1);
+            logCtrl.fillLanded(logCtrl.landed, ctx, u1);
             for (let i = 0; i < this.grid.length; i++) {
                 for (let j = 0; j < this.grid[i].length; j++) {
                     if (this.grid[i][j] !== 0) {
@@ -215,21 +215,21 @@ const MainController = (() => {
 
     //! needs fixing to be without anonymous function
     const setupEventListeners = function(el) {
-        document.addEventListener('keydown', function(event) {
+        document.addEventListener('keydown', function blab(event) {
             if (event.keyCode === up || event.which === up) {
-                if (testing.collisionRotate(testing.landed, el) !== 0) {
+                if (logCtrl.collisionRotate(logCtrl.landed, el) !== 0) {
                     // el.rotate();
                 }
             } else if (event.keyCode === left || event.which === left) {
-                if (testing.collisionLeft(testing.landed, el) !== 0) {
+                if (logCtrl.collisionLeft(logCtrl.landed, el) !== 0) {
                     el.left();
                 }
             } else if (event.keyCode === right || event.which === right) {
-                if (testing.collisionRight(testing.landed, el) !== 0) {
+                if (logCtrl.collisionRight(logCtrl.landed, el) !== 0) {
                     el.right();
                 }
             } else if (event.keyCode === down || event.which === down) {
-                if (testing.collisionDown(testing.landed, el) !== 0) {
+                if (logCtrl.collisionDown(logCtrl.landed, el) !== 0) {
                     el.down();
                 }
             } else if (event.keyCode === space || event.which === space) {
@@ -250,7 +250,7 @@ const MainController = (() => {
     const init = () => {
 
 
-        let randTet = testing.getRandom(tetro);
+        let randTet = logCtrl.getRandom(tetro);
 
         if (randTet.counter === 0) {
             setupEventListeners(randTet);
@@ -263,16 +263,16 @@ const MainController = (() => {
         randTet.draw();
 
 
-        //? fixed, i think (needs testing)
+        //? fixed, i think (needs logCtrl)
         let move = setInterval(() => {
-            if (testing.collisionDown(testing.landed, randTet) !== 0) {
+            if (logCtrl.collisionDown(logCtrl.landed, randTet) !== 0) {
                 randTet.down();
-                testing.setCanvas(ctx, canvas, u1);
+                logCtrl.setCanvas(ctx, canvas, u1);
                 randTet.draw();
             } else {
                 clearInterval(move);
-                testing.insert(testing.landed, randTet);
-                testing.removeLine(testing.landed)
+                logCtrl.insert(logCtrl.landed, randTet);
+                logCtrl.removeLine(logCtrl.landed)
                 randTet.counter++;
                 console.log(randTet.counter)
                 randTet.reset();
@@ -283,5 +283,5 @@ const MainController = (() => {
 
     init();
 
-})();
+})(logicController);
 
