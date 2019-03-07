@@ -4,8 +4,26 @@ const logicController = (() => {
         fillLanded: (arr, c, unit) => {
             for (let i = 0; i < arr.length; i++) {
                 for (let j = 0; j < arr[i].length; j++) {
-                    if (arr[i][j] !== 0) {
+                    if (arr[i][j] === 1) {
                         c.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 2) {
+                        c.fillStyle = 'rgba(76, 214, 49, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 3) {
+                        c.fillStyle = 'rgba(233, 237, 14, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 4) {
+                        c.fillStyle = 'rgba(0, 85, 255, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 5) {
+                        c.fillStyle = 'rgba(217, 142, 255, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 6) {
+                        c.fillStyle = 'rgba(255, 38, 211, 0.5)';
+                        c.fillRect(j * unit, i * unit, unit, unit);
+                    } else if (arr[i][j] === 7) {
+                        c.fillStyle = 'rgba(38, 255, 139, 0.5)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     }
                 }
@@ -41,8 +59,8 @@ const logicController = (() => {
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
-            [1, 1, 1, 1, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         ],
         getRandom: (obj) => {
             let keys = [];
@@ -132,7 +150,7 @@ const logicController = (() => {
             for (let i = 0; i < grid.length; i++) {
                 if (grid[i].includes(0) === false) {
                     grid.splice(i, 1);
-                    grid.unshift([0,0,0,0,0,0,0,0,0, 0])
+                    grid.unshift([0,0,0,0,0,0,0,0,0, 0]);
                 }
             }
         }
@@ -141,10 +159,10 @@ const logicController = (() => {
 })();
 
 
+const MainController = ((logicCtrl) => {
 
-
-const MainController = ((logCtrl) => {
-
+    let score = 0;
+    let check = false;
     const u1 = 25;
     const [space, left, up, right, down] = [32, 37, 38, 39, 40];
     const canvas = document.getElementById("main_canvas");
@@ -184,14 +202,44 @@ const MainController = ((logCtrl) => {
             return this.grid = tempGrid;
         }
         draw() {
-            logCtrl.setCanvas(ctx, canvas, u1);
-            logCtrl.fillLanded(logCtrl.landed, ctx, u1);
+            logicCtrl.setCanvas(ctx, canvas, u1);
+            logicCtrl.fillLanded(logicCtrl.landed, ctx, u1);
             for (let i = 0; i < this.grid.length; i++) {
                 for (let j = 0; j < this.grid[i].length; j++) {
-                    if (this.grid[i][j] !== 0) {
-                        ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-                        ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
-                    }
+                    switch (this.grid[i][j]) {
+                        case 1:
+                            ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 2:
+                            ctx.fillStyle = 'rgba(76, 214, 49, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 3:
+                            ctx.fillStyle = 'rgba(233, 237, 14, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 4:
+                            ctx.fillStyle = 'rgba(0, 85, 255, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 5:
+                            ctx.fillStyle = 'rgba(217, 142, 255, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 6:
+                            ctx.fillStyle = 'rgba(255, 38, 211, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                        case 7:
+                            ctx.fillStyle = 'rgba(38, 255, 139, 0.5)';
+                            ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                            break;
+                      }
+                    // if (this.grid[i][j] !== 0) {
+                    //     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                    //     ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
+                    // }
                 }
             }
         }
@@ -212,30 +260,32 @@ const MainController = ((logCtrl) => {
         Z: new TetGrid(4, 0, 3, [[7, 7, 0], [0, 7, 7], [0, 0, 0]])
     }
 
-
-    //! needs fixing to be without anonymous function
     const setupEventListeners = function(el) {
-        document.addEventListener('keydown', function blab(event) {
+        document.addEventListener('keydown', function movement(event) {
             if (event.keyCode === up || event.which === up) {
-                if (logCtrl.collisionRotate(logCtrl.landed, el) !== 0) {
+                if (logicCtrl.collisionRotate(logicCtrl.landed, el) !== 0) {
                     // el.rotate();
                 }
             } else if (event.keyCode === left || event.which === left) {
-                if (logCtrl.collisionLeft(logCtrl.landed, el) !== 0) {
+                if (logicCtrl.collisionLeft(logicCtrl.landed, el) !== 0) {
                     el.left();
                 }
             } else if (event.keyCode === right || event.which === right) {
-                if (logCtrl.collisionRight(logCtrl.landed, el) !== 0) {
+                if (logicCtrl.collisionRight(logicCtrl.landed, el) !== 0) {
                     el.right();
                 }
             } else if (event.keyCode === down || event.which === down) {
-                if (logCtrl.collisionDown(logCtrl.landed, el) !== 0) {
+                if (logicCtrl.collisionDown(logicCtrl.landed, el) !== 0) {
                     el.down();
                 }
             } else if (event.keyCode === space || event.which === space) {
 
             }
             el.draw();
+            if (check === true) {
+                document.removeEventListener('keydown', movement, false);
+                check = false;
+            }
         });
     }
 
@@ -249,32 +299,23 @@ const MainController = ((logCtrl) => {
 
     const init = () => {
 
+        let randTet = logicCtrl.getRandom(tetro);
 
-        let randTet = logCtrl.getRandom(tetro);
-
-        if (randTet.counter === 0) {
-            setupEventListeners(randTet);
-        }
-
-
-
-
+        setupEventListeners(randTet);
 
         randTet.draw();
 
-
-        //? fixed, i think (needs logCtrl)
         let move = setInterval(() => {
-            if (logCtrl.collisionDown(logCtrl.landed, randTet) !== 0) {
+            if (logicCtrl.collisionDown(logicCtrl.landed, randTet) !== 0) {
                 randTet.down();
-                logCtrl.setCanvas(ctx, canvas, u1);
+                logicCtrl.setCanvas(ctx, canvas, u1);
                 randTet.draw();
             } else {
+                check = true;
                 clearInterval(move);
-                logCtrl.insert(logCtrl.landed, randTet);
-                logCtrl.removeLine(logCtrl.landed)
+                logicCtrl.insert(logicCtrl.landed, randTet);
+                logicCtrl.removeLine(logicCtrl.landed)
                 randTet.counter++;
-                console.log(randTet.counter)
                 randTet.reset();
                 init();
             }
@@ -285,3 +326,7 @@ const MainController = ((logCtrl) => {
 
 })(logicController);
 
+// TODO: add score system with falling acceleration
+// TODO: set gameover with screen
+// TODO: repair rotation collision
+// TODO: set start button with gameplay loop
