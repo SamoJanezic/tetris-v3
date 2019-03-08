@@ -1,4 +1,6 @@
 const logicController = (() => {
+    let score = 0;
+    let scoreBoard = document.getElementById("score");
 
     return {
         fillLanded: (arr, c, unit) => {
@@ -150,7 +152,9 @@ const logicController = (() => {
             for (let i = 0; i < grid.length; i++) {
                 if (grid[i].includes(0) === false) {
                     grid.splice(i, 1);
-                    grid.unshift([0,0,0,0,0,0,0,0,0, 0]);
+                    grid.unshift([0,0,0,0,0,0,0,0,0,0]);
+                    score += 10;
+                    scoreBoard.innerHTML = `Score: ${score}`;
                 }
             }
         }
@@ -161,7 +165,8 @@ const logicController = (() => {
 
 const MainController = ((logicCtrl) => {
 
-    let score = 0;
+    let speed = 500;
+    
     let check = false;
     const u1 = 25;
     const [space, left, up, right, down] = [32, 37, 38, 39, 40];
@@ -169,7 +174,7 @@ const MainController = ((logicCtrl) => {
     canvas.width = u1 * 10;
     canvas.height = u1 * 20;
     const ctx = canvas.getContext("2d");
-
+    
 
     class TetGrid {
         constructor(posX, posY, length, grid) {
@@ -298,7 +303,6 @@ const MainController = ((logicCtrl) => {
 
 
     const init = () => {
-
         let randTet = logicCtrl.getRandom(tetro);
 
         setupEventListeners(randTet);
@@ -314,12 +318,13 @@ const MainController = ((logicCtrl) => {
                 check = true;
                 clearInterval(move);
                 logicCtrl.insert(logicCtrl.landed, randTet);
-                logicCtrl.removeLine(logicCtrl.landed)
+                logicCtrl.removeLine(logicCtrl.landed, score);
+
                 randTet.counter++;
                 randTet.reset();
                 init();
             }
-        }, 500)
+        }, speed)
     }
 
     init();
