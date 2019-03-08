@@ -329,4 +329,4 @@ const MainController = ((logicCtrl) => {
 // TODO: add score system with falling acceleration
 // TODO: set gameover with screen
 // TODO: repair rotation collision
-// TODO: set start button with gameplay loop
+// TODO: set start button with init function that resets all values, resets canvas, starts gameplay loop
