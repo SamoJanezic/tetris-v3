@@ -1,4 +1,4 @@
-const logicController = (() => {
+let logicController = (() => {
     let score = 0;
     let scoreBoard = document.getElementById("score");
 
@@ -7,25 +7,25 @@ const logicController = (() => {
             for (let i = 0; i < arr.length; i++) {
                 for (let j = 0; j < arr[i].length; j++) {
                     if (arr[i][j] === 1) {
-                        c.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                        c.fillStyle = 'rgba(255, 0, 0, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 2) {
-                        c.fillStyle = 'rgba(76, 214, 49, 0.5)';
+                        c.fillStyle = 'rgba(76, 214, 49, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 3) {
-                        c.fillStyle = 'rgba(233, 237, 14, 0.5)';
+                        c.fillStyle = 'rgba(233, 237, 14, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 4) {
-                        c.fillStyle = 'rgba(0, 85, 255, 0.5)';
+                        c.fillStyle = 'rgba(0, 85, 255, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 5) {
-                        c.fillStyle = 'rgba(217, 142, 255, 0.5)';
+                        c.fillStyle = 'rgba(217, 142, 255, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 6) {
-                        c.fillStyle = 'rgba(255, 38, 211, 0.5)';
+                        c.fillStyle = 'rgba(255, 38, 211, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     } else if (arr[i][j] === 7) {
-                        c.fillStyle = 'rgba(38, 255, 139, 0.5)';
+                        c.fillStyle = 'rgba(38, 255, 139, 0.7)';
                         c.fillRect(j * unit, i * unit, unit, unit);
                     }
                 }
@@ -75,13 +75,13 @@ const logicController = (() => {
             return obj[keys[randomNum]];
         },
         setCanvas: (c, canv, unit) => {
-            c.fillStyle = "black";
+            c.fillStyle = 'black';
             c.fillRect(0, 0, canv.width, canv.height);
             for (let i = unit; i < canv.height; i += unit) {
                 c.beginPath();
                 c.moveTo(i, 0);
                 c.lineTo(i, canv.height);
-                c.strokeStyle = "white";
+                c.strokeStyle = 'white';
                 c.lineWidth = 0.5;
                 c.stroke();
             }
@@ -89,16 +89,26 @@ const logicController = (() => {
                 c.beginPath();
                 c.moveTo(0, i);
                 c.lineTo(canv.width, i);
-                c.strokeStyle = "white";
+                c.strokeStyle = 'white';
                 c.lineWidth = 0.5;
                 c.stroke();
             }
             c.beginPath();
             c.moveTo(0, canv.height);
             c.lineTo(canv.width, canv.height);
-            c.strokeStyle = "yellow";
+            c.strokeStyle = 'yellow';
             c.lineWidth = 5;
             c.stroke();
+        },
+        startScreen: (c, canv, unit) => {
+            c.fillRect(0, 0, canv.width, canv.height);
+            c.strokeStyle = 'white';
+            c.rect(unit * 2.5, unit * 5, unit * 5, unit * 1.5);
+            c.stroke();
+            c.font = "20px Georgia"
+            c.fillStyle = "White";
+            c.textAlign = "center";
+            c.fillText('Start Tetris', canv.width/2, unit * 6);
         },
         collisionDown: (main, tet) => {
             for (let i = 0; i < tet.grid.length; i++) {
@@ -140,41 +150,35 @@ const logicController = (() => {
                 }
             }
         },
-        createGrid: (x, y, grid) => {
-            for (let i = 0; i < y; i++) {
-                grid.push([0]);
-                for (let j = 0; j < x; j++) {
-                    grid[i].push(0);
-                }
-            }
+        updateScore () {
+            score += 10;
+            scoreBoard.innerHTML = `Score: ${score}`;
+            return score;
         },
         removeLine: (grid) => {
             for (let i = 0; i < grid.length; i++) {
                 if (grid[i].includes(0) === false) {
                     grid.splice(i, 1);
                     grid.unshift([0,0,0,0,0,0,0,0,0,0]);
-                    score += 10;
-                    scoreBoard.innerHTML = `Score: ${score}`;
+                    logicController.updateScore();
                 }
             }
-        }
+        },
     }
 
 })();
 
 
-const MainController = ((logicCtrl) => {
+let elementController = ((logicCtrl) => {
 
     let speed = 500;
-    
     let check = false;
     const u1 = 25;
     const [space, left, up, right, down] = [32, 37, 38, 39, 40];
-    const canvas = document.getElementById("main_canvas");
+    const canvas = document.getElementById('main_canvas');
     canvas.width = u1 * 10;
     canvas.height = u1 * 20;
     const ctx = canvas.getContext("2d");
-    
 
     class TetGrid {
         constructor(posX, posY, length, grid) {
@@ -204,6 +208,7 @@ const MainController = ((logicCtrl) => {
                     tempGrid[i].unshift(this.grid[j][i]);
                 }
             }
+
             return this.grid = tempGrid;
         }
         draw() {
@@ -241,10 +246,6 @@ const MainController = ((logicCtrl) => {
                             ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
                             break;
                       }
-                    // if (this.grid[i][j] !== 0) {
-                    //     ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
-                    //     ctx.fillRect(j * u1 + this.posX * u1, i * u1 + this.posY * u1, u1, u1);
-                    // }
                 }
             }
         }
@@ -256,17 +257,36 @@ const MainController = ((logicCtrl) => {
     }
 
     const tetro = {
-        I: new TetGrid(3, 0, 4, [[0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0], [0, 1, 0, 0]]),
-        J: new TetGrid(4, 0, 3, [[0, 2, 0], [0, 2, 0], [2, 2, 0]]),
-        L: new TetGrid(3, 0, 3, [[0, 3, 0], [0, 3, 0], [0, 3, 3]]),
-        O: new TetGrid(4, 0, 2, [[4, 4], [4, 4]]),
-        S: new TetGrid(4, 0, 3, [[0, 5, 5], [5, 5, 0], [0, 0, 0]]),
-        T: new TetGrid(4, 0, 3, [[0, 0, 0], [6, 6, 6], [0, 6, 0]]),
-        Z: new TetGrid(4, 0, 3, [[7, 7, 0], [0, 7, 7], [0, 0, 0]])
+        I: new TetGrid(3, 0, 4, [[0, 1, 0, 0],
+                                 [0, 1, 0, 0],
+                                 [0, 1, 0, 0],
+                                 [0, 1, 0, 0]]),
+        J: new TetGrid(4, 0, 3, [[0, 2, 0],
+                                 [0, 2, 0],
+                                 [2, 2, 0]]),
+        L: new TetGrid(3, 0, 3, [[0, 3, 0],
+                                 [0, 3, 0],
+                                 [0, 3, 3]]),
+        O: new TetGrid(4, 0, 2, [[4, 4],
+                                 [4, 4]]),
+        S: new TetGrid(4, 0, 3, [[0, 5, 5],
+                                 [5, 5, 0],
+                                 [0, 0, 0]]),
+        T: new TetGrid(4, 0, 3, [[0, 0, 0],
+                                 [6, 6, 6],
+                                 [0, 6, 0]]),
+        Z: new TetGrid(4, 0, 3, [[7, 7, 0],
+                                 [0, 7, 7],
+                                 [0, 0, 0]])
     }
 
     const setupEventListeners = function(el) {
         document.addEventListener('keydown', function movement(event) {
+            event.preventDefault();
+            if (check === true) {
+                document.removeEventListener('keydown', movement, false);
+                check = false;
+            }
             if (event.keyCode === up || event.which === up) {
                 if (logicCtrl.collisionRotate(logicCtrl.landed, el) !== 0) {
                     // el.rotate();
@@ -287,51 +307,73 @@ const MainController = ((logicCtrl) => {
 
             }
             el.draw();
-            if (check === true) {
-                document.removeEventListener('keydown', movement, false);
-                check = false;
-            }
         });
     }
 
-    //? remove default eventListeners
-    window.addEventListener("keydown", function(e) {
-        if([space, left, up, right, down].indexOf(e.keyCode) > -1) {
-            e.preventDefault();
+
+
+    return {
+        gameLoop: () => {
+            let randTet = logicCtrl.getRandom(tetro);
+
+            setupEventListeners(randTet);
+
+            randTet.draw();
+
+            let move = setInterval(() => {
+                if (logicCtrl.collisionDown(logicCtrl.landed, randTet) !== 0) {
+                    randTet.down();
+                    logicCtrl.setCanvas(ctx, canvas, u1);
+                    randTet.draw();
+                } else {
+                    check = true;
+                    clearInterval(move);
+                    logicCtrl.insert(logicCtrl.landed, randTet);
+                    logicCtrl.removeLine(logicCtrl.landed, score);
+                    randTet.counter++;
+                    randTet.reset();
+                    elementController.gameLoop();
+                }
+            }, speed);
+        },
+        gameStop: () => {
+            logicCtrl.startScreen(ctx, canvas, u1);
         }
-    });
-
-
-    const init = () => {
-        let randTet = logicCtrl.getRandom(tetro);
-
-        setupEventListeners(randTet);
-
-        randTet.draw();
-
-        let move = setInterval(() => {
-            if (logicCtrl.collisionDown(logicCtrl.landed, randTet) !== 0) {
-                randTet.down();
-                logicCtrl.setCanvas(ctx, canvas, u1);
-                randTet.draw();
-            } else {
-                check = true;
-                clearInterval(move);
-                logicCtrl.insert(logicCtrl.landed, randTet);
-                logicCtrl.removeLine(logicCtrl.landed, score);
-
-                randTet.counter++;
-                randTet.reset();
-                init();
-            }
-        }, speed)
     }
 
-    init();
-
 })(logicController);
+
+let mainController = (function (logicCtrl, elCtrl) {
+
+    let gameplay = false;
+
+    return {
+        changeStatus() {
+            let mouseX = event.clientX;
+            let mouseY = event.clientY;
+            if (mouseX > 590 && mouseX < 715 && mouseY > 170 && mouseY < 210) {
+                gameplay = true;
+                mainController.init();
+            }
+        },
+
+        init() {
+            if (gameplay === true) {
+                elCtrl.gameLoop();
+            } else {
+                elCtrl.gameStop();
+            }
+        }
+    }
+
+
+})(logicController, elementController);
+
+mainController.init();
+
+
+
 
 // TODO: add score system with falling acceleration
 // TODO: set gameover with screen
 // TODO: repair rotation collision
-// TODO: set start button with init function that resets all values, resets canvas, starts gameplay loop
