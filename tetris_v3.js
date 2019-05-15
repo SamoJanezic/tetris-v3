@@ -1,6 +1,14 @@
 let logicController = (() => {
-    let score = 0;
+    let score = null;
     let scoreBoard = document.getElementById("score");
+
+    function updateScore() {
+        score += 10;
+        scoreBoard.innerHTML = `Score: ${score}`;
+        if(score % 100 === 0 && score != 0) {
+            return true;
+        }
+    }
 
     return {
         fillLanded: (arr, c, unit) => {
@@ -150,17 +158,16 @@ let logicController = (() => {
                 }
             }
         },
-        updateScore () {
-            score += 10;
-            scoreBoard.innerHTML = `Score: ${score}`;
-            return score;
-        },
         removeLine: (grid) => {
             for (let i = 0; i < grid.length; i++) {
                 if (grid[i].includes(0) === false) {
                     grid.splice(i, 1);
                     grid.unshift([0,0,0,0,0,0,0,0,0,0]);
-                    logicController.updateScore();
+                    score += 10;
+                    scoreBoard.innerHTML = `Score: ${score}`;
+                    if(score % 100 === 0 && score != 0) {
+                        return true;
+                    }
                 }
             }
         },
@@ -312,6 +319,7 @@ let elementController = ((logicCtrl) => {
 
 
 
+
     return {
         gameLoop: () => {
             let randTet = logicCtrl.getRandom(tetro);
@@ -329,7 +337,10 @@ let elementController = ((logicCtrl) => {
                     check = true;
                     clearInterval(move);
                     logicCtrl.insert(logicCtrl.landed, randTet);
-                    logicCtrl.removeLine(logicCtrl.landed, score);
+                    let scoreCheck = logicCtrl.removeLine(logicCtrl.landed, score);
+                    if (scoreCheck === true) {
+                        speed -= 100;
+                    }
                     randTet.counter++;
                     randTet.reset();
                     elementController.gameLoop();
@@ -338,7 +349,7 @@ let elementController = ((logicCtrl) => {
         },
         gameStop: () => {
             logicCtrl.startScreen(ctx, canvas, u1);
-        }
+        },
     }
 
 })(logicController);
@@ -374,6 +385,6 @@ mainController.init();
 
 
 
-// TODO: add score system with falling acceleration
+// TODO: score system added but bugs present
 // TODO: set gameover with screen
 // TODO: repair rotation collision
