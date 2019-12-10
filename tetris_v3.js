@@ -356,16 +356,17 @@ let elementController = ((logicCtrl) => {
 
 let mainController = (function (logicCtrl, elCtrl) {
 
-    let gameplay = false;
+    let gameplay = true;
 
     return {
         changeStatus() {
             let mouseX = event.clientX;
             let mouseY = event.clientY;
-            if (mouseX > 590 && mouseX < 715 && mouseY > 170 && mouseY < 210) {
-                gameplay = true;
-                mainController.init();
-            }
+            // if (mouseX > 250 && mouseX < 715 && mouseY > 170 && mouseY < 210) {
+                // gameplay = true;
+            //     console.log(mouseX, mouseY);
+                // mainController.init();
+            // }
         },
 
         init() {
