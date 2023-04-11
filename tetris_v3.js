@@ -116,7 +116,7 @@ let logicController = (() => {
             c.font = "20px Georgia"
             c.fillStyle = "White";
             c.textAlign = "center";
-            c.fillText('Start Tetris', canv.width/2, unit * 6);
+            c.fillText('Click Start', canv.width/2, unit * 6);
         },
         collisionDown: (main, tet) => {
             for (let i = 0; i < tet.grid.length; i++) {
@@ -356,17 +356,16 @@ let elementController = ((logicCtrl) => {
 
 let mainController = (function (logicCtrl, elCtrl) {
 
-    let gameplay = true;
+    let gameplay = false;
 
     return {
         changeStatus() {
             let mouseX = event.clientX;
             let mouseY = event.clientY;
-            // if (mouseX > 250 && mouseX < 715 && mouseY > 170 && mouseY < 210) {
-                // gameplay = true;
-            //     console.log(mouseX, mouseY);
-                // mainController.init();
-            // }
+            if (mouseX > 250 && mouseX < 715 && mouseY > 170 && mouseY < 210) {
+                gameplay = true;
+                mainController.init();
+            }
         },
 
         init() {
